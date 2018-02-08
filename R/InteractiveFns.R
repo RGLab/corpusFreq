@@ -57,6 +57,7 @@ interactiveSpellCheck.vector <- function(inputVector, vectorName, outputDir){
                      "# at ", Sys.time(), "\n")
     cat(header, file = outFile, append = TRUE)
 
+    # TODO!!!
     # # run regular spell-check first
     # message("---- Running Spell Check ---- \n")
     # misspelledWords <- checkSpelling(inputVector)
@@ -147,6 +148,7 @@ interactiveSpellCheck.df <- function(input, outputDir, dfName = NULL){
     # get all unique words from entire DF into one vector
     words <- df2words(input)
 
+    # TODO!!!
     # # run regular spell-check first
     # message("---- Running Spell Check ---- \n")
     # misspelledWords <- checkSpelling(words)

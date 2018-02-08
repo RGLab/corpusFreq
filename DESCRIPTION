@@ -2,14 +2,25 @@ Package: corpusFreq
 Type: Package
 Title: Create a Frequency Table Corpus from Free Text
 Version: 0.1.0
-Author: Evan Henrich
-Maintainer: ehenrich@fredhutch.org
+Authors@R: c(person("Evan", "Henrich", role = "aut"),
+             person("Ju Yeong", "Kim", role = "aut"),
+             person("Lauren", "Wolfe", role = "aut"),
+             person("ImmuneSpace Package Maintainer",
+                    email = "immunespace@gmail.com",
+                    role = c("cre", "cph")))
+URL: https://github.com/RGLab/corpusFreq
 Description: This package makes tidying text that has highly 
     specialized words easier by helping you create a frequency
     table of the words in related free text, clean this frequency 
     table to use it as a corpus, and then check new text with a 
     handy interactive function that outputs any substitutions
     to an R file so everything is reproducible.
-License: What license is it under?
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
+Imports: dplyr,
+    hunspell,
+    SnowballC,
+    stringdist
+RoxygenNote: 6.0.1
+

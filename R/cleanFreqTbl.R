@@ -8,6 +8,7 @@
 #' @param outputFile path for output, should be .R
 #' @param sdBoundary integer for stringdist max distance to allow for frequencyTbl suggestions
 #' @import hunspell
+#' @import dplyr
 #' @export
 cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2){
 
