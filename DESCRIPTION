@@ -1,0 +1,15 @@
+Package: corpusFreq
+Type: Package
+Title: Create a Frequency Table Corpus from Free Text
+Version: 0.1.0
+Author: Evan Henrich
+Maintainer: ehenrich@fredhutch.org
+Description: This package makes tidying text that has highly 
+    specialized words easier by helping you create a frequency
+    table of the words in related free text, clean this frequency 
+    table to use it as a corpus, and then check new text with a 
+    handy interactive function that outputs any substitutions
+    to an R file so everything is reproducible.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
