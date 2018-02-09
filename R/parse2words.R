@@ -11,8 +11,18 @@ vec2words <- function(vec, reduce = TRUE, rmStopWords = TRUE){
     vec <- gsub(" [[:punct:]]+|[[:punct:]]+ ", " ", vec) # for all punct at start or end of word
     vec <- gsub("\\.|\\(|\\)|\\?|=|\\,|>|<|#|;|'|:", " ", vec) # for non-hyphen punct in middle of words
 
+    # punctuation tidying
     words <- unlist(strsplit(vec, " ")) # make list of words / split on spaces
-    words <- gsub("\\b(\\-|\\*|\\/)", "", words) # oddball cases with punct at edge
+    words <- gsub("^(\\-|\\*|\\/)|(\\-|\\*|\\/)$", "", words) # oddball cases with punct at edge
+    words <- gsub("--", "-", words) # double hyphen accidents
+
+    # handle hyphenated terms with letters on both sides
+    hyps <- words[ grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words) ] # try to avoid terms like 'b-cell'
+    hyps <- unlist(strsplit(hyps, "-"))
+    keep <- words[ !grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words) ]
+    words <- c(hyps, keep)
+
+    # handle digits
     words <- words[ grep("^\\d+$", words, invert = T) ] # remove integers
     words <- words[ grep("\\d+[[:punct:]]\\d+", words, invert = T) ] # remove things like '1:1' or '0.123'
     words <- words[ nchar(words) > 2 ] # remove words with only 1 character, possibly due to subs
@@ -20,6 +30,7 @@ vec2words <- function(vec, reduce = TRUE, rmStopWords = TRUE){
     if(rmStopWords){ words <- words[ !(words %in% stopwords::stopwords()) ] }
 
     # handle hyphenated datetime words like '2-week' 'year-1'
+    words[ grep("minute", words)] <- "minute"
     words[ grep("hour", words)] <- "hour"
     words[ grep("day", words)] <- "day"
     words[ grep("week", words)] <- "week"
