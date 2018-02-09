@@ -21,6 +21,7 @@ LazyData: true
 Imports: dplyr,
     hunspell,
     SnowballC,
-    stringdist
+    stringdist,
+    stopwords
 RoxygenNote: 6.0.1
 
