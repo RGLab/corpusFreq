@@ -22,18 +22,17 @@ vec2words <- function(vec, deDupe = TRUE, rmStopWords = TRUE){
     vec <- vec[ !is.na(vec) ] # remove NA elements of vector
     vec <- tolower(vec) # lowercase
     vec <- gsub("<\\/|\\\n", " ", vec) # for html elements , e.g. </p>
-    vec <- gsub(" [[:punct:]]+|[[:punct:]]+ ", " ", vec) # for all punct at start or end of word
     vec <- gsub("\\.|\\(|\\)|\\?|=|\\,|>|<|#|;|'|:", " ", vec) # for non-hyphen punct in middle of words
 
     # punctuation tidying post splitting
     words <- unlist(strsplit(vec, " ")) # make list of words / split on spaces
-    words <- gsub("^(\\-|\\*|\\/)|(\\-|\\*|\\/)$", "", words) # oddball cases with punct at edge
+    words <- gsub("^(\\-|\\*|\\/)|(\\*|\\/)$", "", words) # oddball cases with punct at edge
     words <- gsub("--", "-", words) # double hyphen accidents
 
     # handle hyphenated terms with multiple letters on both sides
     hyps <- words[ grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words) ] # try to avoid terms like 'b-cell'
     hyps <- unlist(strsplit(hyps, "-"))
-    keep <- words[ !grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words) ]
+    keep <- words[ grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words, invert = T) ]
     words <- c(hyps, keep)
 
     # handle digits
