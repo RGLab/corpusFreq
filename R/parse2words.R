@@ -12,7 +12,7 @@
 #' @param rmStopWords boolean, default TRUE, remove stopwords
 #' @importFrom stopwords stopwords
 #' @export
-vec2words <- function(vec, deDupe = TRUE, rmStopWords = TRUE){
+vec2words <- function(vec, deDupe = FALSE, rmStopWords = FALSE){
 
     # De-dupe elements of vector b/c assume copy-pasted and want
     # to base frequencies on typed words.
