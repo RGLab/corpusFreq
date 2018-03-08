@@ -62,8 +62,7 @@ vec2words <- function(vec, deDupe = FALSE, rmStopWords = FALSE){
 #'     which may include hyphens or plus-signs are not altered
 #'
 #' @param df dataframe object
-#' @param deDupe boolean, default TRUE, dedupe df column elements prior to parsing
-#' @param rmStopWords boolean, default TRUE, remove stopwords
+#' @param ... arguments to pass to vec2words
 #' @export
 df2words <- function(df, ...){
     words <- unlist(apply(df, 2, vec2words, ...))
@@ -75,9 +74,8 @@ df2words <- function(df, ...){
 #' @description parse a list to words carefully to ensure that scientific terms
 #'     which may include hyphens or plus-signs are not altered
 #'
-#' @param vec character vector
-#' @param deDupe boolean, default TRUE, dedupe list elements prior to parsing
-#' @param rmStopWords boolean, default TRUE, remove stopwords
+#' @param ls list object
+#' @param ... arguments to pass to vec2words
 #' @export
 list2words <- function(ls, ...){
     words <- unlist(lapply(ls, vec2words, ...))

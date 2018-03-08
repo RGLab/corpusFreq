@@ -9,9 +9,7 @@ df2words(df, ...)
 \arguments{
 \item{df}{dataframe object}
 
-\item{deDupe}{boolean, default TRUE, dedupe df column elements prior to parsing}
-
-\item{rmStopWords}{boolean, default TRUE, remove stopwords}
+\item{...}{arguments to pass to vec2words}
 }
 \description{
 parse a df to words carefully to ensure that scientific terms

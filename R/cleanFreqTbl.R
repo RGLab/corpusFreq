@@ -29,7 +29,7 @@ cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2){
     # Compare incorrect terms to all freqTbl words to find closest possiblity
     message("Comparing misspellings to other freqTbl words using stringdist")
     freqSuggs <- freqSugg(badWords = incorrect$word,
-                          corpusFreqTbl = freqTbl,
+                          freqTbl = freqTbl,
                           sdBoundary = sdBoundary)
 
     # create df of incorrect, dictSuggs, and freqSuggs

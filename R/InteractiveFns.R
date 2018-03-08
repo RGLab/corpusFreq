@@ -2,7 +2,7 @@
 ###                 HELPER                        ###
 #####################################################
 
-makeSuggList <- function(words, freqTbl){
+makeSuggList <- function(words, freqTbl, metaData, sdBoundary = 2){
 
   suggLs <- list()
 
@@ -22,27 +22,35 @@ makeSuggList <- function(words, freqTbl){
 
       fSuggs <- freqSugg(badWords = badWords,
                          freqTbl = freqTbl,
-                         sdBoundary = 2)
+                         sdBoundary = sdBoundary)
 
       suggLs <- lapply( seq(1:length(fSuggs)), function(x){
-          return( c(fSuggs[[x]], hSuggs[[x]]) )
+          return( unique(c(fSuggs[[x]], hSuggs[[x]])) ) # may be same therefore dedupe
       })
+
       names(suggLs) <- badWords
   }
 
   # Internal Consistency Check:
   # Find single values and see if they may be very similar in terms of
-  # stringdist to more common words within the same vector
-  internalFt <- makeFreqTbl(words)
-  singles <- internalFt[ internalFt == 1 ]
-  iSuggs <- freqSugg(badWords = names(singles),
-                     freqTbl = internalFt,
-                     sdBoundary = 2)
-  names(iSuggs) <- names(singles)
-  iSuggs <- iSuggs[ names(iSuggs) != iSuggs ] # drop self-referenced
+  # stringdist to more common words within the same vector.
 
-  # return combined list
-  suggLs <- c(suggLs, iSuggs)
+  #TODO ... deal with scenarios based on metaData
+  if( metaData$medLength > 100 | metaData$numStrings > 5){
+      if(metaData$medLength > 100){
+          words <- words[ !(words %in% stopwords::stopwords()) ]
+      }
+      internalFt <- makeFreqTbl(words)
+      singles <- internalFt[ internalFt == 1 ]
+      iSuggs <- freqSugg(badWords = names(singles),
+                         freqTbl = internalFt,
+                         sdBoundary = sdBoundary)
+      names(iSuggs) <- names(singles)
+      iSuggs <- iSuggs[ names(iSuggs) != iSuggs ] # drop self-referenced
+
+      # return combined list
+      suggLs <- c(suggLs, iSuggs)
+  }
 
   return(suggLs)
 }
@@ -122,6 +130,7 @@ InteractiveFindReplace <- function(badWords, input, outFile = NULL){
 #' @param name object name or string to use as fileName
 #' @param outputDir filepath for where to append lines of code
 #' @param freqTbl frequency table of words in a custom corpus
+#' @importFrom stats median
 #' @export
 interactiveSpellCheck <- function(input, name, outputDir, freqTbl){
 
@@ -137,13 +146,20 @@ interactiveSpellCheck <- function(input, name, outputDir, freqTbl){
                      "# at ", Sys.time(), "\n")
     cat(header, file = outFile, append = TRUE)
 
-    # Parse, run spellcheck, and get suggested replacements
+    # Parse
     if( is.data.frame(input) ){
       words <- unique(df2words(input))
     }else{
       words <- unique(vec2Words(input))
     }
-    suggLs <- makeSuggList(words, freqTbl)
+
+    # get metaData
+    metaData <- list()
+    metaData$medLength <- stats::median(lapply(input, nchar))
+    metaData$numStrings <- length(input)
+
+    # Make suggestions
+    suggLs <- makeSuggList(words, freqTbl, metaData)
 
     # do find/Replace
     res <- InteractiveFindReplace(suggLs,

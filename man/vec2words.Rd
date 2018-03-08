@@ -4,7 +4,7 @@
 \alias{vec2words}
 \title{parse a character vector to words with specialized handling for scientific terms}
 \usage{
-vec2words(vec, deDupe = TRUE, rmStopWords = TRUE)
+vec2words(vec, deDupe = FALSE, rmStopWords = FALSE)
 }
 \arguments{
 \item{vec}{character vector}

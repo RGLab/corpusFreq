@@ -13,3 +13,7 @@ freqSugg(badWords, freqTbl, sdBoundary = 2)
 
 \item{sdBoundary}{integer for stringdist max distance to allow for frequencyTbl suggestions}
 }
+\description{
+provides suggestions for misspelled words or those that are
+    less common in the internal frequency table
+}

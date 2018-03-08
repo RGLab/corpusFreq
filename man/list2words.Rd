@@ -7,11 +7,9 @@
 list2words(ls, ...)
 }
 \arguments{
-\item{vec}{character vector}
+\item{ls}{list object}
 
-\item{deDupe}{boolean, default TRUE, dedupe list elements prior to parsing}
-
-\item{rmStopWords}{boolean, default TRUE, remove stopwords}
+\item{...}{arguments to pass to vec2words}
 }
 \description{
 parse a list to words carefully to ensure that scientific terms

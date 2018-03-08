@@ -4,12 +4,14 @@
 \alias{makeFreqTbl}
 \title{make a frequency table of words from vector, list, or dataframe}
 \usage{
-makeFreqTbl(input, reduce = TRUE)
+makeFreqTbl(input, deDupe = FALSE, rmStopWords = FALSE)
 }
 \arguments{
 \item{input}{R object of vector, list, or dataframe}
 
-\item{reduce}{boolean, default TRUE, controls de-duping of elements at highest level}
+\item{deDupe}{boolean deduplicate}
+
+\item{rmStopWords}{boolean remove stopwords}
 }
 \description{
 takes an r-object of vector, list, or dataframe, and

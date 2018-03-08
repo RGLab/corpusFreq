@@ -4,7 +4,8 @@
 #'     parses this into a frequency table of words
 #'
 #' @param input R object of vector, list, or dataframe
-#' @param reduce boolean, default TRUE, controls de-duping of elements at highest level
+#' @param deDupe boolean deduplicate
+#' @param rmStopWords boolean remove stopwords
 #' @export
 makeFreqTbl <- function(input, deDupe = FALSE, rmStopWords = FALSE){
 
