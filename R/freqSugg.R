@@ -22,19 +22,20 @@ freqSugg <- function(badWords, freqTbl, sdBoundary = 2){
         gWord <- paste0("^", word, "$") # to avoid partial matching
         gWord <- gsub("\\+", "\\\\+", gWord) # grep needs escape char for plus signs
         rowMinus <- tmp[y,][ !grepl(gWord, colnames(tmp)) ] # remove the colname from options
-        mostSimilar <- rowMinus[ min(rowMinus) == rowMinus] # find most similar
-        nm <- names(mostSimilar)[[1]]
+        mostSim <- rowMinus[ min(rowMinus) == rowMinus] # find most similars
+        mostSim <- mostSim[ mostSim <= sdBoundary ]
 
-        if(mostSimilar[[1]] > sdBoundary){ return(word) } # return word if outside of stringdist boundary
-        # if(wordStem(nm) == wordStem(word)){ return(word)}   # TODO ... use this? lymphocyt returned!
+        if(length(mostSim) == 0){ return(word) } # return word if no options within sdBoundary
 
-        # return most similar word if most similar word has 2.5x greater frequency.
-        # Reason for 2.5 multiplier is that with internal frequency tables, a 2:1 ratio
-        # causes the ms word to be suggested when there is very little information to
-        # base this rationale off.
-        msFreq <- cft$Freq[ cft$word == nm ]
+        # Subset ms to those with frequency differences of 2.5x current word
         currFreq <- ifelse(word %in% cft$word, cft$Freq[ cft$word == word ], 0)
-        ret <- ifelse(msFreq > (currFreq * 2.5), nm, word)
+        msFreq <- cft$Freq[ match(names(mostSim), cft$word) ]
+        names(msFreq) <- names(mostSim)
+        msFreq <- msFreq[ msFreq > (currFreq * 2.5) ]
+
+        # return word with max frequency
+        res <- names(msFreq)[ msFreq == max(msFreq)][[1]]
+        ret <- ifelse(length(msFreq > 0), res, word)
     })
 
     return(result)

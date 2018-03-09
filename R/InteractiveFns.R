@@ -155,7 +155,7 @@ interactiveSpellCheck <- function(input, name, outputDir, freqTbl){
 
     # get metaData
     metaData <- list()
-    metaData$medLength <- stats::median(lapply(input, nchar))
+    metaData$medLength <- stats::median(sapply(input, nchar))
     metaData$numStrings <- length(input)
 
     # Make suggestions
