@@ -10,9 +10,8 @@
 #' @importFrom SnowballC wordStem
 #' @export
 freqSugg <- function(badWords, freqTbl, sdBoundary = 2){
-    cft <- data.frame(freqTbl, stringsAsFactors = F)
-    colnames(cft) <- c("word","Freq") # Rename since not sure what they may be coming in
-
+    cft <- data.frame(freqTbl, stringsAsFactors = FALSE)
+    colnames(cft) <- c("word", "Freq")
     tmp <- stringdist::stringdistmatrix(badWords, cft$word)
     rownames(tmp) <- badWords
     colnames(tmp) <- cft$word
@@ -33,9 +32,12 @@ freqSugg <- function(badWords, freqTbl, sdBoundary = 2){
         names(msFreq) <- names(mostSim)
         msFreq <- msFreq[ msFreq > (currFreq * 2.5) ]
 
-        # return word with max frequency
-        res <- names(msFreq)[ msFreq == max(msFreq)][[1]]
-        ret <- ifelse(length(msFreq > 0), res, word)
+        # return word with max frequency unless none available b/c of 2.5X cutoff
+        if(length(msFreq) > 0 ){
+            return(names(msFreq)[ msFreq == max(msFreq)][[1]])
+        }else{
+            return(word)
+        }
     })
 
     return(result)

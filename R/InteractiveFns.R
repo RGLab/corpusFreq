@@ -2,7 +2,7 @@
 ###                 HELPER                        ###
 #####################################################
 
-makeSuggList <- function(words, freqTbl, metaData, sdBoundary = 2){
+makeSuggList <- function(words, freqTbl, metaData = NULL, sdBoundary = 2){
 
   suggLs <- list()
 
@@ -36,20 +36,22 @@ makeSuggList <- function(words, freqTbl, metaData, sdBoundary = 2){
   # stringdist to more common words within the same vector.
 
   #TODO ... deal with scenarios based on metaData
-  if( metaData$medLength > 100 | metaData$numStrings > 5){
-      if(metaData$medLength > 100){
-          words <- words[ !(words %in% stopwords::stopwords()) ]
-      }
-      internalFt <- makeFreqTbl(words)
-      singles <- internalFt[ internalFt == 1 ]
-      iSuggs <- freqSugg(badWords = names(singles),
-                         freqTbl = internalFt,
-                         sdBoundary = sdBoundary)
-      names(iSuggs) <- names(singles)
-      iSuggs <- iSuggs[ names(iSuggs) != iSuggs ] # drop self-referenced
+  if( !is.null(metaData) ){
+      if( metaData$medLength > 100 | metaData$numStrings > 5){
+          if(metaData$medLength > 100){
+              words <- words[ !(words %in% stopwords::stopwords()) ]
+          }
+          internalFt <- makeFreqTbl(words)
+          singles <- internalFt[ internalFt == 1 ]
+          iSuggs <- freqSugg(badWords = names(singles),
+                             freqTbl = internalFt,
+                             sdBoundary = sdBoundary)
+          names(iSuggs) <- names(singles)
+          iSuggs <- iSuggs[ names(iSuggs) != iSuggs ] # drop self-referenced
 
-      # return combined list
-      suggLs <- c(suggLs, iSuggs)
+          # return combined list
+          suggLs <- c(suggLs, iSuggs)
+      }
   }
 
   return(suggLs)
@@ -72,6 +74,10 @@ makeSuggList <- function(words, freqTbl, metaData, sdBoundary = 2){
 InteractiveFindReplace <- function(badWords, input, outFile = NULL){
     ret <- input
 
+    if(!is.null(outFile) & !file.exists(outFile)){
+        file.create(outFile)
+    }
+
     message("NOTES:")
     message("leaving the replacement field blank means do not replace.")
     message("Entering 'f' uses frequency table suggestion")
@@ -84,34 +90,31 @@ InteractiveFindReplace <- function(badWords, input, outFile = NULL){
 
         rep <- readline(prompt = paste0("enter replacement for ", nm, ": "))
 
-        if(rep == ""){
-          rep <- nm
-        }else if( rep == "f"){
-          rep <- badWords[[nm]][[1]]
+        if( rep == "f"){
+            rep <- badWords[[nm]][[1]]
         }else if( rep == "d"){
-          rep <- badWords[[nm]][[2]]
+            rep <- badWords[[nm]][[2]]
         }
 
         message("")
 
-        if( is.data.frame(input) ){
-            ret <- data.frame(lapply(ret, function(x){
-              gsub(pattern = nm,
-                   replacement = rep,
-                   x)}))
-            colnames(ret) <- colnames(inputDF)
-
-            if(!is.null(outFile)){
-              codeLn <- paste0("\ndata.frame(lapply(inputDF, function(x){ gsub(pattern = '",
-                               nm, "', replacement = '", rep, "', x) }))")
-              cat(codeLn, file = outFile, append = TRUE)
+        if( rep != ""){
+            if( is.data.frame(input) ){
+                ret <- data.frame(lapply(ret, function(x){
+                    gsub(pattern = nm,
+                         replacement = rep,
+                         x)}))
+                colnames(ret) <- colnames(inputDF)
+                codeLn <- paste0("\ndata.frame(lapply(inputDF, function(x){ gsub(pattern = '",
+                                 nm, "', replacement = '", rep, "', x) }))")
+            }else{
+                ret <- gsub(pattern = nm, replacement = rep, x = ret)
+                codeLn <- paste0("gsub(pattern = '",
+                                 nm, "', replacement = '", rep, "', x)\n")
             }
-        }else{
-            ret <- gsub(pattern = nm, replacement = rep, x = ret)
 
             if(!is.null(outFile)){
-              codeLn <- paste0("gsub(pattern = '", nm, "', replacement = '", rep, "', x) }))\n")
-              cat(codeLn, file = outFile, append = TRUE)
+                cat(codeLn, file = outFile, append = TRUE)
             }
         }
     }
