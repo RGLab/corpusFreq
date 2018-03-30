@@ -21,37 +21,35 @@ vec2words <- function(vec, deDupe = FALSE, rmStopWords = FALSE){
     # handling punctation before splitting
     vec <- vec[ !is.na(vec) ] # remove NA elements of vector
     vec <- tolower(vec) # lowercase
-    vec <- gsub("<\\/|\\\n", " ", vec) # for html elements , e.g. </p>
-    vec <- gsub("\\.|\\(|\\)|\\?|=|\\,|>|<|#|;|'|:", " ", vec) # for non-hyphen punct in middle of words
+    vec <- gsub("<\\/|\\\n", "", vec) # for html elements , e.g. </p>, remove punct and two-letter or less rm later
+    vec <- gsub("\\.|\\(|\\)|\\?|=|\\,|>|<|#|;|'|:|_|\\^|\\/|%|\\*|\\[|\\]|~", " ", vec) # for non-hyphen punct throughout
+    vec <- gsub('"', "", vec) # remove double quotes
 
     # punctuation tidying post splitting
     words <- unlist(strsplit(vec, " ")) # make list of words / split on spaces
-    words <- gsub("^(\\-|\\*|\\/)|(\\*|\\/)$", "", words) # oddball cases with punct at edge
+    words <- gsub("^(\\-|\\+)", "", words) # oddball cases with leading '+' or '-'
     words <- gsub("--", "-", words) # double hyphen accidents
+    words <- gsub("nonascii", "", words) # for issues with non-ascii characters
 
-    # handle hyphenated terms with multiple letters on both sides
-    hyps <- words[ grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words) ] # try to avoid terms like 'b-cell'
+    # Don't touch CD / IL markers
+    cdil <- words[ grep("cd\\d{1,3}|il-\\d{1,2}|il\\d{1,2}", words) ]
+
+    # handle hyphenated terms with multiple letters on both sides and non-CD/IL terms
+    noncdil <- words[ !(words %in% cdil) ]
+    hyps <- noncdil[ grep("^[[:alnum:]]{1,}-[[:alnum:]]{1,}", noncdil) ] # avoid splitting terms like 'b-cell'
     hyps <- unlist(strsplit(hyps, "-"))
-    keep <- words[ grep("^[[:alpha:]]{2,}-[[:alpha:]]{2,}", words, invert = T) ]
-    words <- c(hyps, keep)
+    nohyp <- noncdil[ grep("^[[:alnum:]]{1,}-[[:alnum:]]{1,}", noncdil, invert = T) ]
+    nohyp <- gsub("\\+$", "", nohyp) # remove trailing plus from non-hyphenated terms
+    nohyp <- unlist(strsplit(nohyp, "+", fixed = T)) # in cases such as 100ug+papain
+    noncdil <- c(nohyp, hyps)
+    noncdil <- gsub("\\d|-", "", noncdil)
 
-    # handle digits
-    words <- words[ grep("^\\d+$", words, invert = T) ] # remove integers
-    words <- words[ grep("\\d+[[:punct:]]\\d+", words, invert = T) ] # remove things like '1:1' or '0.123'
-
-    # remove words with only 1 character, possibly due to subs
+    # rm single letters and empties from anywhere
+    words <- c(cdil, noncdil)
     words <- words[ nchar(words) > 2 ]
 
     # remove common non-analytical terms, e.g. 'of' and 'the'
     if(rmStopWords){ words <- words[ !(words %in% stopwords::stopwords()) ] }
-
-    # handle hyphenated datetime words like '2-week' 'year-1'
-    words[ grep("minute", words)] <- "minute"
-    words[ grep("hour", words)] <- "hour"
-    words[ grep("day", words)] <- "day"
-    words[ grep("week", words)] <- "week"
-    words[ grep("month", words)] <- "month"
-    words[ grep("year", words)] <- "year"
 
     return(words)
 }
