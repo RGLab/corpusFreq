@@ -35,5 +35,15 @@ print(result)
 "This is my study looking at CD4+ cells, but not CD4-CD8- ones."
 ```
 
+## Use with related package BioCorpus
+If you are working on biological text and want to use a frequency table that has already been curated, you can use data in the `BioCorpus` data package.  There are four frequency tables representing different public or soon-to-be-public database: ImmPort, GEO, Center for AIDS Vaccine Data, and ONB.  The combined version is also found in the package and can be loading by doing the following:
+
+```R
+    library(devtools)
+    install_github("RGLab/BioCorpus")
+    library(BioCorpus)
+    ft <- BioCorpus::allDataFT
+```
+
 ## Examples & Documentation
 For more advanced examples and detailed documentation, see the package vignettes.
