@@ -74,7 +74,7 @@ makeSuggList <- function(words, freqTbl, metaData = NULL, sdBoundary = 2){
 InteractiveFindReplace <- function(badWords, input, outFile = NULL){
     ret <- input
 
-    if(!is.null(outFile) & !file.exists(outFile)){
+    if(!is.null(outFile) && !file.exists(outFile)){
         file.create(outFile)
     }
 
@@ -82,18 +82,23 @@ InteractiveFindReplace <- function(badWords, input, outFile = NULL){
     message("leaving the replacement field blank means do not replace.")
     message("Entering 'f' uses frequency table suggestion")
     message("Entering 'd' uses dictionary suggestion \n")
+    message("frequency table and dictionary suggestions only shown if present.")
 
     for( nm in names(badWords) ){
         message(paste0("word not found: ", nm))
-        message(paste0("Frequency Table Suggestion: ", badWords[[nm]][[1]]))
-        message(paste0("Dictionary Suggestion: ", badWords[[nm]][[2]]))
+
+        fsugg <- badWords[[nm]][[1]]
+        message(paste0("Frequency Table Suggestion: ", fsugg))
+
+        dsugg <- ifelse(length(badWords[[nm]]) == 2, badWords[[nm]][[2]], "none" )
+        message(paste0("Dictionary Suggestion: ", dsugg))
 
         rep <- readline(prompt = paste0("enter replacement for ", nm, ": "))
 
         if( rep == "f"){
-            rep <- badWords[[nm]][[1]]
+            rep <- fsugg
         }else if( rep == "d"){
-            rep <- badWords[[nm]][[2]]
+            rep <- dsugg
         }
 
         message("")
