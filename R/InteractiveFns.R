@@ -78,6 +78,12 @@ InteractiveFindReplace <- function(badWords, input, outFile = NULL){
         file.create(outFile)
     }
 
+    if(!is.null(outFile)){
+        firstLn <- paste0("# word one on ", Sys.time())
+        nextLn <- "\nspellCheckRes <- function(x){"
+        cat(c(firstLn, nextLn), file = outFile, append = TRUE)
+    }
+
     message("NOTES:")
     message("leaving the replacement field blank means do not replace.")
     message("Entering 'f' uses frequency table suggestion")
@@ -108,20 +114,25 @@ InteractiveFindReplace <- function(badWords, input, outFile = NULL){
                 ret <- data.frame(lapply(ret, function(x){
                     gsub(pattern = nm,
                          replacement = rep,
-                         x)}))
+                         x,
+                         ignore.case = TRUE)}))
                 colnames(ret) <- colnames(inputDF)
-                codeLn <- paste0("\ndata.frame(lapply(inputDF, function(x){ gsub(pattern = '",
-                                 nm, "', replacement = '", rep, "', x) }))")
+                codeLn <- paste0("\n\tx <- data.frame(lapply(inputDF, function(x){ gsub(pattern = '",
+                                 nm, "', replacement = '", rep, "', x, ignore.case = TRUE) }))")
             }else{
-                ret <- gsub(pattern = nm, replacement = rep, x = ret)
-                codeLn <- paste0("gsub(pattern = '",
-                                 nm, "', replacement = '", rep, "', x)\n")
+                ret <- gsub(pattern = nm, replacement = rep, x = ret, ignore.case = TRUE)
+                codeLn <- paste0("\n\tx <- gsub(pattern = '",
+                                 nm, "', replacement = '", rep, "', x, ignore.case = TRUE)")
             }
 
             if(!is.null(outFile)){
                 cat(codeLn, file = outFile, append = TRUE)
             }
         }
+    }
+
+    if( !is.null(outFile)){
+        cat("\n}", file = outFile, append = TRUE)
     }
 
     return(ret)
