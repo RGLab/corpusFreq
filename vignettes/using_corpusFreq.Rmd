@@ -13,7 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 First let's start by pulling in some text.  In this case, we have a snippet of the wikipedia entry for "biology".
 ```{r get-input}
-txt <- readLines("wikipedia_biology.txt")
+con <- file("wikipedia_biology.txt")
+txt <- readLines(con)
+close(con)
 print(txt)
 ```
 
