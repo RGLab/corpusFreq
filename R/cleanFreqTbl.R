@@ -43,43 +43,7 @@ cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2){
 
     if(ready != ""){ return(chk) } # return df in case user wants to see
 
-    # write first lines of outputFile
-    if( !file.exists(outputFile) ){ file.create(outputFile) }
-    header <- paste0("# Changes made at ", Sys.time(), "\n")
-    cat(header, file = outFile, append = TRUE)
-
-    # generate replacement vec
-    ret <- sapply(seq(1:nrow(chk)), function(x){
-        message("")
-        message(paste0("Current Word: ", chk$incorrect[[x]]))
-        message(paste0("Dictionary Suggestion: ", chk$dict[[x]]))
-        message(paste0("FreqTbl Suggestion: ", chk$freq[[x]]))
-        chg <- readline(prompt = "replacement: ")
-
-        if( chg == "f"){
-            repl <- chk$freq[[x]]
-        }else if( chg == "d"){
-            repl <- chk$dict[[x]]
-        }else if( chg != ""){
-            repl <- chg
-        }else{
-            repl <- chk$incorrect[[x]]
-        }
-
-        if(chg != ""){
-            codeLn <- paste0("gsub( ", chk$incorrect[[x]], ", ", repl, ", vec)")
-            cat(codeLn, file = outputFile, append = TRUE)
-        }
-
-        return(repl)
-    })
-
-    # Add newlines to outputFile in case later updates are made
-    cat("\n\n", file = outFile, append = TRUE)
-
-    # recombine keepers with new terms
-    incorrect$word <- ret
-    updated <- rbind(incorrect, keep)
+    updated <- InteractiveFindReplace(freqSuggs, incorrect$word, outputFile)
 
     # summarise frequencies
     updated <- updated %>%

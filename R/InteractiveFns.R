@@ -116,8 +116,8 @@ InteractiveFindReplace <- function(badWords, input, outFile = NULL){
                          replacement = rep,
                          x,
                          ignore.case = TRUE)}))
-                colnames(ret) <- colnames(inputDF)
-                codeLn <- paste0("\n\tx <- data.frame(lapply(inputDF, function(x){ gsub(pattern = '",
+                colnames(ret) <- colnames(input)
+                codeLn <- paste0("\n\tx <- data.frame(lapply(input, function(x){ gsub(pattern = '",
                                  nm, "', replacement = '", rep, "', x, ignore.case = TRUE) }))")
             }else{
                 ret <- gsub(pattern = nm, replacement = rep, x = ret, ignore.case = TRUE)
@@ -169,7 +169,7 @@ interactiveSpellCheck <- function(input, name, outputDir, freqTbl){
     if( is.data.frame(input) ){
       words <- unique(df2words(input))
     }else{
-      words <- unique(vec2Words(input))
+      words <- unique(vec2words(input))
     }
 
     # get metaData
