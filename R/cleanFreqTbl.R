@@ -10,7 +10,7 @@
 #' @import hunspell
 #' @import dplyr
 #' @export
-cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2){
+cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2, minCharToEdit = 4){
 
     # Transform freqTbl to df for easier manipulation
     df <- data.frame(freqTbl,
@@ -22,7 +22,6 @@ cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2){
     message("Checking for misspellings according to english dictionary")
     correct <- hunspell_check(df$word)
     incorrect <- df[ !correct, ]
-    keep <- df[ correct, ] # for later
     suggs <- hunspell_suggest(incorrect$word)
     dictSuggs <- sapply(suggs, function(x){ ifelse(length(x) > 1, x[[1]], x)})
 
@@ -42,13 +41,31 @@ cleanFreqTbl <- function(freqTbl, outputFile = NULL, sdBoundary = 2){
     ready <- readline(prompt = "Press 'enter' to begin or type any characters to exit: ")
 
     if(ready != ""){ return(chk) } # return df in case user wants to see
+    
+    chk <- chk[ nchar(chk$incorrect) > minCharToEdit, ] # not useful to work on nchar < 4 it seems
+    chk <- chk[ chk$incorrect != chk$freq, ] # means there isn't a better suggestion in the ft
+    chk$stemmed <- SnowballC::wordStem(chk$incorrect)
+    chk <- chk[ chk$stemmed != chk$freq, ] # rm words that are variations of those already present
+    
+    # make badWords named list
+    bw <- mapply(c, chk$freq, chk$dict, SIMPLIFY = FALSE)
+    names(bw) <- chk$incorrect
+    
+    # get new words from user
+    chk$updated <- InteractiveFindReplace(badWords = bw, chk$incorrect, outputFile)
 
-    updated <- InteractiveFindReplace(freqSuggs, incorrect$word, outputFile)
-
-    # summarise frequencies
-    updated <- updated %>%
-        group_by(word)
-        summarise(freq)
+    # re-summarise frequencies
+    keep <- df[ !(df$word %in% chk$incorrect), ]
+    chg <- df[ df$word %in% chk$incorrect, ]
+    chg$word <- chk$updated[ match(chg$word, chk$incorrect) ]
+    df <- rbind(chg, keep)
+    updated <- df %>%
+        group_by(word) %>%
+        mutate(newFreq = sum(freq)) %>%
+        summarise(freq = unique(newFreq))
+    
+    # convert df back to contingency table
+    updated <- xtabs(freq~word, data = updated)
 
     return(updated)
 }
