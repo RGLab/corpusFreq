@@ -4,7 +4,7 @@
 \alias{cleanFreqTbl}
 \title{clean a word frequency table to remove misspellings}
 \usage{
-cleanFreqTbl(freqTbl, outputFile = NULL, sdBoundary = 2)
+cleanFreqTbl(freqTbl, outputFile = NULL, sdBoundary = 2, minCharToEdit = 4)
 }
 \arguments{
 \item{freqTbl}{frequency table}

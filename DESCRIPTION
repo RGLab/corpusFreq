@@ -18,11 +18,12 @@ Description: This package makes tidying text that has highly
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat
+Suggests: 
+    testthat,
+    covr
 Imports: dplyr,
     hunspell,
     SnowballC,
     stringdist,
     stopwords
-RoxygenNote: 6.0.1
-
+RoxygenNote: 7.1.1
