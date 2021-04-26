@@ -2,7 +2,7 @@
 
  <!-- badges: start -->
  [![R-CMD-check](https://github.com/RGLab/corpusFreq/workflows/R-CMD-check/badge.svg)](https://github.com/RGLab/corpusFreq/actions)
- [![Codecov test coverage](https://codecov.io/gh/RGLab/corpusFreq/branch/master/graph/badge.svg)](https://codecov.io/gh/RGLab/corpusFreq?branch=master)
+ [![Codecov test coverage](https://codecov.io/gh/RGLab/corpusFreq/branch/main/graph/badge.svg)](https://codecov.io/gh/RGLab/corpusFreq?branch=main)
  [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
   <!-- badges: end -->
 

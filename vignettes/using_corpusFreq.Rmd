@@ -20,7 +20,7 @@ print(txt)
 ```
 
 We can see how the higher level functions in the package will parse a text, by running the custom parsing function `vec2words`.  This function uses logic that preserves some important biological information, like the "+" and "-" at the end of immunological terms like CD4+ and IL-2-.  In this way, the tools are biology specific, which you can see by
-looking at the unit test for `vec2words` in the github repo: <https://github.com/RGLab/corpusFreq/blob/master/tests/testthat/test-vec2words.R>
+looking at the unit test for `vec2words` in the github repo: <https://github.com/RGLab/corpusFreq/blob/main/tests/testthat/test-vec2words.R>
 
 ```{r demo-parser}
 words <- unique(vec2words(txt))
